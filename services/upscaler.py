@@ -7,16 +7,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Global cache
-LOADED_MODELS = {}
+from functools import lru_cache
+from config import settings
+
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+@lru_cache(maxsize=settings.MODEL_CACHE_SIZE)
 def get_model(mode: str, scale: int):
-    """Lazy loads the specific model requested."""
+    """Lazy loads the specific model requested. Cached via LRU."""
     key = f"{mode}_x{scale}"
-    
-    if key in LOADED_MODELS:
-        return LOADED_MODELS[key]
     
     logger.info(f"Loading model: {key} on {device}...")
     try:
@@ -24,7 +23,6 @@ def get_model(mode: str, scale: int):
         loader = ModelLoader(device=device)
         model = loader.load_from_file(path).model
         model.eval()
-        LOADED_MODELS[key] = model
         return model
     except ValueError:
         raise ValueError(f"Unsupported configuration: Mode '{mode}', Scale '{scale}x'")

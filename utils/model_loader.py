@@ -5,28 +5,15 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-MODELS = {
-    "fidelity_x4": {
-        "url": "https://github.com/JingyunLiang/SwinIR/releases/download/v0.0/003_realSR_BSRGAN_DFOWMFC_s64w8_SwinIR-L_x4_GAN.pth",
-        "filename": "SwinIR-L_x4_GAN.pth",
-        "path": "models/SwinIR-L_x4_GAN.pth"
-    },
-    "aesthetic_x4": {
-        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
-        "filename": "RealESRGAN_x4plus.pth",
-        "path": "models/RealESRGAN_x4plus.pth"
-    },
-    "fidelity_x2": {
-        "url": "https://github.com/JingyunLiang/SwinIR/releases/download/v0.0/003_realSR_BSRGAN_DFO_s64w8_SwinIR-M_x2_GAN.pth",
-        "filename": "SwinIR-M_x2_GAN.pth",
-        "path": "models/SwinIR-M_x2_GAN.pth"
-    },
-    "aesthetic_x2": {
-        "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.1/RealESRGAN_x2plus.pth",
-        "filename": "RealESRGAN_x2plus.pth",
-        "path": "models/RealESRGAN_x2plus.pth"
+from config import settings
+
+MODELS = {}
+for key, data in settings.MODEL_CONFIGS.items():
+    MODELS[key] = {
+        "url": data["url"],
+        "filename": data["filename"],
+        "path": os.path.join(settings.MODELS_DIR, data["filename"])
     }
-}
 
 def download_file(url, path):
     """Downloads a file from a URL to a local path with a progress indicator."""

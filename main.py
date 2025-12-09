@@ -6,6 +6,7 @@ from PIL import Image
 import io
 import logging
 import asyncio
+from config import settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -30,10 +31,12 @@ async def upscale(file: UploadFile = File(...), mode: str = Form(...), scale: in
     
     try:
         logger.info(f"Processing image: mode={mode}, scale={scale}x")
-        # Read image
-        image_data = await file.read()
-        image = Image.open(io.BytesIO(image_data)).convert("RGB")
+        # Read image efficiently from spooled file
+        image = Image.open(file.file).convert("RGB")
         logger.info(f"Image loaded: {image.size}")
+
+        if image.width > settings.MAX_IMAGE_WIDTH or image.height > settings.MAX_IMAGE_HEIGHT:
+            raise HTTPException(status_code=400, detail=f"Image too large. Max size is {settings.MAX_IMAGE_WIDTH}x{settings.MAX_IMAGE_HEIGHT}")
         
         # Upscale (run in threadpool to avoid blocking event loop)
         result_image = await asyncio.to_thread(upscale_image, image, mode, scale)
@@ -52,4 +55,4 @@ async def upscale(file: UploadFile = File(...), mode: str = Form(...), scale: in
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run(app, host=settings.HOST, port=settings.PORT)

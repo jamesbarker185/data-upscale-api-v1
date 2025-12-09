@@ -38,15 +38,37 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Only JPG and PNG are supported.');
             return;
         }
-        selectedFile = file;
-        fileNameDisplay.textContent = file.name;
-        fileNameDisplay.classList.remove('hidden');
-        upscaleBtn.disabled = false;
 
-        // Preview original
+        // Reset state
+        selectedFile = null;
+        upscaleBtn.disabled = true;
+        fileNameDisplay.classList.add('hidden');
+        originalImg.src = '';
+        
+        // 10MB limit
+        if (file.size > 10 * 1024 * 1024) {
+             alert('File too large. Maximum size is 10MB.');
+             return;
+        }
+
         const reader = new FileReader();
         reader.onload = (e) => {
-            originalImg.src = e.target.result;
+            // Check dimensions
+            const img = new Image();
+            img.onload = () => {
+                if (img.width > 2048 || img.height > 2048) {
+                    alert('Image too large. Max dimensions are 2048x2048.');
+                    return;
+                }
+                
+                // Validation passed
+                selectedFile = file;
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.classList.remove('hidden');
+                upscaleBtn.disabled = false;
+                originalImg.src = e.target.result;
+            };
+            img.src = e.target.result;
         }
         reader.readAsDataURL(file);
     }
