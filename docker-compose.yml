@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  upscaler-api:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      # Persist downloaded models
+      - upscale-models:/app/models
+    environment:
+      - ENV=production
+      - HOST=0.0.0.0
+      - PORT=8080
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+volumes:
+  upscale-models:

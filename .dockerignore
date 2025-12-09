@@ -1,0 +1,12 @@
+__pycache__
+venv
+.git
+.vscode
+.pytest_cache
+# Ignore local models directory to prevent huge build context.
+# Models will be mounted via volume or downloaded at runtime.
+models/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
