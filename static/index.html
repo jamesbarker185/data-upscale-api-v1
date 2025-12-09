@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Upscaler POC</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <!-- Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Comparison Slider -->
+    <script defer src="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/index.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/img-comparison-slider@8/dist/styles.css"/>
+</head>
+<body>
+
+    <div class="background-blob"></div>
+
+    <main class="container">
+        <header>
+            <h1>AI Image Upscaler <span class="badge">POC</span></h1>
+            <p>Validate the difference between Fidelity and Aesthetic upscaling models.</p>
+        </header>
+
+        <section class="upload-section" id="drop-zone">
+            <input type="file" id="file-input" accept="image/png, image/jpeg" hidden>
+            <div class="upload-box">
+                <div class="icon">📁</div>
+                <p><strong>Click to upload</strong> or drag and drop</p>
+                <p class="subtext">JPG or PNG</p>
+            </div>
+            <div id="file-name" class="file-name hidden">No file selected</div>
+        </section>
+
+        <section class="controls">
+            <div class="mode-selector">
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="fidelity" checked>
+                    <div class="card">
+                        <span class="title">Fidelity</span>
+                        <span class="desc">SwinIR - Preserves lines & text. Best for docs/art.</span>
+                    </div>
+                </label>
+                <label class="mode-option">
+                    <input type="radio" name="mode" value="aesthetic">
+                    <div class="card">
+                        <span class="title">Aesthetic</span>
+                        <span class="desc">RealESRGAN - Hallacinates texture. Best for photos.</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="scale-selector" style="margin-bottom: 30px; text-align: center;">
+                <label style="color: var(--text-sub); margin-right: 15px;">Upscale Factor:</label>
+                <label class="radio-inline">
+                    <input type="radio" name="scale" value="2" checked> 2x (Faster)
+                </label>
+                <label class="radio-inline" style="margin-left: 15px;">
+                    <input type="radio" name="scale" value="4"> 4x (Max)
+                </label>
+            </div>
+
+            <button id="upscale-btn" disabled>Upscale Image</button>
+        </section>
+
+        <section id="result-section" class="hidden">
+            <h2>Result Comparison</h2>
+            <div class="comparison-wrapper">
+                <img-comparison-slider>
+                  <img slot="first" id="original-img" src="" width="100%" />
+                  <img slot="second" id="upscaled-img" src="" width="100%" />
+                </img-comparison-slider>
+            </div>
+            <div class="actions">
+                <a id="download-link" href="#" download="upscaled.png" class="btn-secondary">Download Result</a>
+                <button id="reset-btn" class="btn-secondary">Reset</button>
+            </div>
+        </section>
+        
+        <div id="loader" class="hidden">
+            <div class="spinner"></div>
+            <p>Processing... This usage CPU inference, might take 10-20s.</p>
+        </div>
+
+    </main>
+
+    <script src="/static/app.js"></script>
+</body>
+</html>
